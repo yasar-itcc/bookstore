@@ -15,5 +15,9 @@
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1"
+    },
+    "dependencies": {
+        "@tabler/icons-webfont": "^3.49.0",
+        "alpinejs": "^3.17.5"
     }
 }

@@ -1,0 +1,17 @@
+/* Book Store brand colours (from the logo). No red: warnings and errors use amber. */
+@theme {
+    --color-navy: #0B2545;
+    --color-navy-light: #13315C;
+    --color-primary: #1E6FD9;
+    --color-primary-dark: #1859B0;
+    --color-primary-soft: #E8F1FC;
+    --color-cyan: #00B4D8;
+    --color-cyan-soft: #E0F7FB;
+    --color-leaf: #3BB54A;
+    --color-leaf-dark: #2E9139;
+    --color-leaf-soft: #E6F6E8;
+    --color-page: #F5F8FC;
+    --color-ink: #2F3A4C;
+    --color-muted: #6B7A90;
+    --color-line: #E4E9F0;
+}
