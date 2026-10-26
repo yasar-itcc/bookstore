@@ -30,7 +30,11 @@ jobs:
           node-version: 22
           cache: npm
 
+      # Staging lives in a subfolder (wordpress.itcc.net.au/bookstore), so built CSS must point to
+      # /bookstore/build/... for fonts and icons to load.
       - name: Build front-end assets
+        env:
+          ASSET_URL: /bookstore
         run: |
           npm ci
           npm run build
