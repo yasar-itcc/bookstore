@@ -1,8 +1,7 @@
 name: Deploy to staging
 
+# Manual only: pushing to GitHub never deploys. Run it from the Actions tab or `gh workflow run deploy-staging.yml`.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:

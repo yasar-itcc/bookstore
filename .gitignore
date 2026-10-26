@@ -25,3 +25,9 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Excel lock files created while a sheet is open
+~$*
+
+# Local-only development progress sheet
+/development-progress.xlsx
