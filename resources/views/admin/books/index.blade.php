@@ -10,7 +10,7 @@
     </x-admin.page-header>
 
     <div class="admin-card overflow-hidden">
-        <form method="GET" class="grid gap-3 border-b border-line p-5 sm:grid-cols-2 lg:grid-cols-[1fr_200px_160px_160px_auto]">
+        <form method="GET" class="grid gap-3 border-b border-line p-5 sm:grid-cols-2 xl:grid-cols-[1fr_200px_160px_160px_auto]">
             <div class="relative">
                 <i class="ti ti-search pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted"></i>
                 <input type="search" name="search" value="{{ request('search') }}" placeholder="Search title or ISBN" class="admin-input pl-9">
