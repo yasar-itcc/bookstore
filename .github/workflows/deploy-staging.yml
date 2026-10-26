@@ -55,10 +55,10 @@ jobs:
             --exclude=/.env \
             --exclude=/storage/ \
             --exclude=/public/storage \
-            ./ ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}:~/bookstore/
+            ./ ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }}:~/public_html/bookstore/
 
       - name: Migrate and cache
         run: |
           ssh -i ~/.ssh/deploy_key -p ${{ secrets.STAGING_SSH_PORT }} \
             ${{ secrets.STAGING_SSH_USER }}@${{ secrets.STAGING_SSH_HOST }} \
-            'cd ~/bookstore && php artisan migrate --force && ([ -L public/storage ] || php artisan storage:link) && php artisan optimize'
+            'cd ~/public_html/bookstore && php artisan migrate --force && ([ -L public/storage ] || php artisan storage:link) && php artisan optimize'

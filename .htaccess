@@ -1,0 +1,38 @@
+# Used only when the whole app is uploaded inside the web folder (cPanel staging).
+# Visitors get real files from public/ and everything else goes through index.php,
+# so .env, vendor/, storage/ and the app code are never served directly.
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Block hidden files and folders such as .env and .git
+    RewriteRule (^|/)\. - [F,L]
+
+    # Handle Authorization Header
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Handle X-XSRF-Token Header
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # Let the front controller run
+    RewriteRule ^index\.php$ - [L]
+
+    # Serve files that exist in public/ (build assets, favicon, robots.txt, storage link)
+    RewriteCond %{REQUEST_URI}::$1 ^(/.+)/(.*)::\2$
+    RewriteCond %{DOCUMENT_ROOT}%1/public/$1 -f
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    # Send everything else to Laravel
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Without mod_rewrite nothing above protects the app, so refuse to serve anything.
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
