@@ -36,6 +36,7 @@ class BookRequest extends FormRequest
             'published_year' => ['nullable', 'integer', 'min:1000', 'max:'.(now()->year + 1)],
             'is_active' => ['boolean'],
             'is_featured' => ['boolean'],
+            'is_bestseller' => ['boolean'],
             'cover_image' => ['nullable', 'image', 'max:2048'],
             'remove_cover' => ['boolean'],
         ];

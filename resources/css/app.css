@@ -1,10 +1,51 @@
 @import 'tailwindcss';
+@import '@tabler/icons-webfont/dist/tabler-icons.min.css';
 @import './theme.css';
+@plugin '@tailwindcss/typography';
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
+@source '../views/store';
+@source '../views/components/store';
+@source '../views/home.blade.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Lora', Georgia, 'Times New Roman', serif;
+    --shadow-soft: 0 10px 30px -12px rgb(11 37 69 / 0.18);
+    --shadow-book: 0 18px 30px -14px rgb(11 37 69 / 0.45);
+}
+
+@layer components {
+    .store-container {
+        @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+    }
+
+    .btn-store {
+        @apply inline-flex items-center justify-center gap-2 rounded-md bg-primary px-6 py-3 text-sm font-semibold tracking-wide text-white uppercase shadow-md shadow-primary/30 transition hover:bg-primary-dark focus:ring-3 focus:ring-primary/30 focus:outline-none;
+    }
+
+    .btn-store-outline {
+        @apply inline-flex items-center justify-center gap-2 rounded-md border border-primary px-5 py-2.5 text-sm font-semibold tracking-wide text-primary uppercase transition hover:bg-primary hover:text-white;
+    }
+
+    .store-input {
+        @apply block w-full rounded-md border border-line bg-white px-4 py-3 text-sm text-ink placeholder:text-muted/70 focus:border-primary focus:ring-3 focus:ring-primary/15 focus:outline-none;
+    }
+
+    .section-title {
+        @apply font-serif text-3xl font-medium text-navy md:text-4xl;
+    }
+}
+
+[x-cloak] {
+    display: none !important;
+}
+
+/* Horizontal shelves scroll without a visible scrollbar. */
+.no-scrollbar {
+    scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }

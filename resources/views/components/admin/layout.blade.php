@@ -2,19 +2,39 @@
 
 @php
     // Sidebar menu. Each section has a heading (like Vuexy's "Apps & Pages") and its links.
+    $user = auth()->user();
+    $unreadMessages = $user->canAccessSection('messages') ? \App\Models\ContactMessage::whereNull('read_at')->count() : 0;
     $menu = [
         null => [
-            ['label' => 'Dashboard', 'icon' => 'ti-smart-home', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard'],
+            ['label' => 'Dashboard', 'icon' => 'ti-smart-home', 'route' => 'admin.dashboard', 'active' => 'admin.dashboard', 'section' => 'dashboard'],
         ],
         'Catalog' => [
-            ['label' => 'Books', 'icon' => 'ti-books', 'route' => 'admin.books.index', 'active' => 'admin.books.*'],
-            ['label' => 'Categories', 'icon' => 'ti-category', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*'],
-            ['label' => 'Authors', 'icon' => 'ti-feather', 'route' => 'admin.authors.index', 'active' => 'admin.authors.*'],
-            ['label' => 'Publishers', 'icon' => 'ti-building-store', 'route' => 'admin.publishers.index', 'active' => 'admin.publishers.*'],
-            ['label' => 'Languages', 'icon' => 'ti-language', 'route' => 'admin.languages.index', 'active' => 'admin.languages.*'],
+            ['label' => 'Books', 'icon' => 'ti-books', 'route' => 'admin.books.index', 'active' => 'admin.books.*', 'section' => 'catalog'],
+            ['label' => 'Categories', 'icon' => 'ti-category', 'route' => 'admin.categories.index', 'active' => 'admin.categories.*', 'section' => 'catalog'],
+            ['label' => 'Authors', 'icon' => 'ti-feather', 'route' => 'admin.authors.index', 'active' => 'admin.authors.*', 'section' => 'catalog'],
+            ['label' => 'Publishers', 'icon' => 'ti-building-store', 'route' => 'admin.publishers.index', 'active' => 'admin.publishers.*', 'section' => 'catalog'],
+            ['label' => 'Languages', 'icon' => 'ti-language', 'route' => 'admin.languages.index', 'active' => 'admin.languages.*', 'section' => 'catalog'],
+        ],
+        'Marketing' => [
+            ['label' => 'Coupons', 'icon' => 'ti-discount-2', 'route' => 'admin.coupons.index', 'active' => 'admin.coupons.*', 'section' => 'marketing'],
+            ['label' => 'Banners & slider', 'icon' => 'ti-photo', 'route' => 'admin.banners.index', 'active' => 'admin.banners.*', 'section' => 'marketing'],
+            ['label' => 'Featured & bestsellers', 'icon' => 'ti-star', 'route' => 'admin.highlights.index', 'active' => 'admin.highlights.*', 'section' => 'marketing'],
+            ['label' => 'Pricing plans', 'icon' => 'ti-crown', 'route' => 'admin.pricing-plans.index', 'active' => 'admin.pricing-plans.*', 'section' => 'marketing'],
+            ['label' => 'Subscribers', 'icon' => 'ti-mail', 'route' => 'admin.subscribers.index', 'active' => 'admin.subscribers.*', 'section' => 'marketing'],
+        ],
+        'Content' => [
+            ['label' => 'Pages', 'icon' => 'ti-file-text', 'route' => 'admin.pages.index', 'active' => 'admin.pages.*', 'section' => 'content'],
+            ['label' => 'Blog posts', 'icon' => 'ti-article', 'route' => 'admin.posts.index', 'active' => 'admin.posts.*', 'section' => 'content'],
+            ['label' => 'Testimonials', 'icon' => 'ti-message-heart', 'route' => 'admin.testimonials.index', 'active' => 'admin.testimonials.*', 'section' => 'content'],
+            ['label' => 'Contact messages', 'icon' => 'ti-inbox', 'route' => 'admin.messages.index', 'active' => 'admin.messages.*', 'section' => 'messages', 'badge' => $unreadMessages],
+        ],
+        'Settings' => [
+            ['label' => 'Store settings', 'icon' => 'ti-settings', 'route' => 'admin.settings.edit', 'active' => 'admin.settings.*', 'section' => 'settings'],
+            ['label' => 'Admin users', 'icon' => 'ti-users', 'route' => 'admin.users.index', 'active' => 'admin.users.*', 'section' => 'users'],
         ],
     ];
-    $user = auth()->user();
+    // Only show what this user's role can open.
+    $menu = collect($menu)->map(fn ($items) => array_values(array_filter($items, fn ($item) => $user->canAccessSection($item['section']))))->filter()->all();
 @endphp
 
 <!DOCTYPE html>
@@ -78,7 +98,14 @@
                        aria-label="{{ $item['label'] }}" :title="compact ? @js($item['label']) : null"
                        @if ($active) aria-current="page" @endif>
                         <i class="ti {{ $item['icon'] }} text-[22px] leading-none"></i>
-                        <span x-show="!compact" class="whitespace-nowrap">{{ $item['label'] }}</span>
+                        <span x-show="!compact" class="flex-1 whitespace-nowrap">{{ $item['label'] }}</span>
+                        @if (! empty($item['badge']))
+                            <span x-show="!compact" @class([
+                                'rounded-full px-2 py-0.5 text-xs font-semibold',
+                                'bg-white text-primary' => $active,
+                                'bg-cyan text-white' => ! $active,
+                            ])>{{ $item['badge'] }}</span>
+                        @endif
                     </a>
                 @endforeach
             @endforeach
@@ -118,7 +145,7 @@
                             <span class="flex size-9 items-center justify-center rounded-full bg-primary-soft font-semibold text-primary">{{ str($user->name)->substr(0, 1)->upper() }}</span>
                             <div class="min-w-0">
                                 <p class="truncate text-sm font-semibold text-ink">{{ $user->name }}</p>
-                                <p class="truncate text-xs text-muted">Admin</p>
+                                <p class="truncate text-xs text-muted">{{ $user->role?->label() ?? 'Admin' }}</p>
                             </div>
                         </div>
                         <div class="my-2 h-px bg-line"></div>

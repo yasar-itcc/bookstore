@@ -175,7 +175,8 @@
             <div class="admin-card space-y-5 p-6">
                 <h2 class="text-lg font-semibold text-navy">Visibility</h2>
                 <x-admin.toggle name="is_active" label="Live in store" hint="Customers can see and buy this book." :checked="$book->is_active" />
-                <x-admin.toggle name="is_featured" label="Featured" hint="Show on the home page." :checked="$book->is_featured" />
+                <x-admin.toggle name="is_featured" label="Featured" hint="Home page slider and spotlight." :checked="$book->is_featured" />
+                <x-admin.toggle name="is_bestseller" label="Bestseller" hint="Show in “Bestsellers of the week”." :checked="$book->is_bestseller" />
             </div>
 
             <button type="submit" class="btn btn-primary w-full py-2.5"><i class="ti ti-device-floppy"></i> {{ $editing ? 'Save changes' : 'Publish book' }}</button>

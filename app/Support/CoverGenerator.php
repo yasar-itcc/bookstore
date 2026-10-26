@@ -66,6 +66,40 @@ class CoverGenerator
     }
 
     /**
+     * Wide cover (1200×750) for a blog post: category, title and the store name on a brand colour.
+     */
+    public function postSvg(string $title, ?string $category): string
+    {
+        [$background, $accent] = self::PALETTES[abs(crc32((string) $category)) % count(self::PALETTES)];
+
+        $lines = $this->wrap($title, 26, 3);
+        $fontSize = count($lines) > 2 ? 64 : 76;
+        $startY = 375 - (count($lines) - 1) * $fontSize * 0.6;
+
+        $text = '';
+        foreach ($lines as $i => $line) {
+            $text .= sprintf('<text x="90" y="%d" font-size="%d" font-family="Lora, Georgia, serif" fill="#FFFFFF">%s</text>', $startY + $i * $fontSize * 1.18, $fontSize, $this->e($line));
+        }
+        $label = $this->e(mb_strtoupper($category ?: 'Blog'));
+        $store = $this->e((string) setting('store.name'));
+
+        return <<<SVG
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 750" width="1200" height="750" font-family="'Public Sans', 'Segoe UI', Arial, sans-serif">
+          <rect width="1200" height="750" fill="{$background}"/>
+          <circle cx="1080" cy="120" r="300" fill="{$accent}" fill-opacity="0.16"/>
+          <circle cx="160" cy="760" r="220" fill="{$accent}" fill-opacity="0.12"/>
+          <g transform="translate(930 470) rotate(-8)" fill="#FFFFFF" fill-opacity="0.12">
+            <rect x="0" y="0" width="150" height="200" rx="8"/><rect x="40" y="-30" width="150" height="200" rx="8"/>
+          </g>
+          <rect x="90" y="150" width="90" height="7" rx="3.5" fill="{$accent}"/>
+          <text x="90" y="125" font-size="28" font-weight="600" letter-spacing="4" fill="{$accent}">{$label}</text>
+          {$text}
+          <text x="90" y="660" font-size="28" font-weight="600" fill="#FFFFFF" fill-opacity="0.75">{$store} · Blog</text>
+        </svg>
+        SVG;
+    }
+
+    /**
      * Split text into lines of about $width characters, at most $maxLines (the last one ends with an ellipsis if cut).
      *
      * @return list<string>

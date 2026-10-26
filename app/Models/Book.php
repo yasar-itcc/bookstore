@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Storage;
 
 #[Fillable([
     'title', 'slug', 'subtitle', 'isbn', 'description', 'category_id', 'publisher_id', 'language_id',
-    'pages', 'published_year', 'cover_image', 'is_featured', 'is_active',
+    'pages', 'published_year', 'cover_image', 'is_featured', 'is_bestseller', 'is_active',
 ])]
 class Book extends Model
 {
@@ -25,6 +25,7 @@ class Book extends Model
     {
         return [
             'is_featured' => 'boolean',
+            'is_bestseller' => 'boolean',
             'is_active' => 'boolean',
             'pages' => 'integer',
             'published_year' => 'integer',

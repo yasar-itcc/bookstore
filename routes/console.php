@@ -19,7 +19,7 @@ Artisan::command('admin:create', function () {
     $password = password('Password (min 8 characters)', required: true, validate: fn ($value) => strlen($value) < 8 ? 'Use at least 8 characters.' : null);
 
     $user = User::updateOrCreate(['email' => $email], ['name' => $name, 'password' => $password]);
-    $user->forceFill(['is_admin' => true])->save();
+    $user->forceFill(['is_admin' => true, 'role' => 'admin'])->save();
 
     $this->info(($existing ? 'Updated' : 'Created')." admin {$email}. Sign in at ".route('admin.login'));
 })->purpose('Create an admin user, or reset an existing user\'s password and make them an admin');

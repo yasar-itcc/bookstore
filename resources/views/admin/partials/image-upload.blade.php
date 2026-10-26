@@ -1,13 +1,13 @@
-{{-- Image picker with live preview. Vars: $name, $label, $current (URL or null), $removeName, $hint (optional). --}}
+{{-- Image picker with live preview. Vars: $name, $label, $current (URL or null), $removeName, $hint and $aspect (optional, default portrait 3:4). --}}
 <div x-data="{ preview: @js($current), remove: false }">
     <p class="admin-label">{{ $label }}</p>
-    <div class="relative flex aspect-[3/4] w-full max-w-56 items-center justify-center overflow-hidden rounded-md border-2 border-dashed border-line bg-page">
+    <div class="relative flex {{ $aspect ?? 'aspect-[3/4] max-w-56' }} w-full items-center justify-center overflow-hidden rounded-md border-2 border-dashed border-line bg-page">
         <template x-if="preview && !remove">
             <img :src="preview" alt="" class="absolute inset-0 size-full object-cover">
         </template>
         <div x-show="!preview || remove" class="p-4 text-center text-sm text-muted">
             <i class="ti ti-photo-up mb-2 block text-3xl text-primary"></i>
-            JPG, PNG or WebP, up to 2 MB
+            JPG, PNG or WebP, up to {{ $maxMb ?? 2 }} MB
         </div>
     </div>
     <div class="mt-3 flex flex-wrap items-center gap-2">

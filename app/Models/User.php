@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\Role;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -28,6 +29,15 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'role' => Role::class,
         ];
+    }
+
+    /**
+     * Whether this admin user's role allows a panel section (dashboard, catalog, marketing, content, messages, settings, users).
+     */
+    public function canAccessSection(string $section): bool
+    {
+        return $this->is_admin && ($this->role ?? Role::Staff)->canAccess($section);
     }
 }
