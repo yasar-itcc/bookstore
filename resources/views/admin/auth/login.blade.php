@@ -1,9 +1,13 @@
+@php
+    $storeName = setting('store.name');
+    $logo = \App\Models\Setting::imageUrl('store.logo');
+@endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sign in · Book Store Admin</title>
+    <title>Sign in · {{ $storeName }} Admin</title>
     @fonts('public-sans')
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 </head>
@@ -26,8 +30,12 @@
     <div class="flex w-full items-center justify-center p-6 sm:p-12 lg:w-[480px] lg:shrink-0">
         <div class="w-full max-w-sm">
             <div class="mb-8 flex items-center gap-2.5">
-                <span class="flex size-10 items-center justify-center rounded-lg bg-primary text-white"><i class="ti ti-book text-2xl"></i></span>
-                <span class="text-2xl font-bold text-navy">Book Store</span>
+                @if ($logo)
+                    <img src="{{ $logo }}" alt="{{ $storeName }}" class="h-20 w-auto max-w-60 object-contain">
+                @else
+                    <span class="flex size-10 items-center justify-center rounded-lg bg-primary text-white"><i class="ti ti-book text-2xl"></i></span>
+                    <span class="text-2xl font-bold text-navy">{{ $storeName }}</span>
+                @endif
             </div>
 
             <h1 class="text-2xl font-semibold text-navy">Welcome back</h1>

@@ -177,6 +177,34 @@ class MarketingContentTest extends TestCase
         $this->put(route('admin.page-content.update', 'about'), ['about__features' => [['icon' => '<script>', 'title' => 'x']]])->assertSessionHasErrors('about__features.0.icon');
     }
 
+    public function test_uploaded_logos_are_trimmed_and_shown_everywhere(): void
+    {
+        Storage::fake('public');
+        $this->actingAs($this->admin());
+
+        // A 300×200 transparent PNG with a solid 100×50 block in the middle.
+        $image = imagecreatetruecolor(300, 200);
+        imagesavealpha($image, true);
+        imagefill($image, 0, 0, imagecolorallocatealpha($image, 0, 0, 0, 127));
+        imagefilledrectangle($image, 100, 75, 199, 124, imagecolorallocate($image, 11, 37, 69));
+        $file = tempnam(sys_get_temp_dir(), 'logo').'.png';
+        imagepng($image, $file);
+
+        $this->put(route('admin.settings.update', 'store'), [
+            'store__name' => 'Book Store',
+            'store__logo' => new UploadedFile($file, 'logo.png', 'image/png', null, true),
+        ])->assertRedirect();
+
+        [$width, $height] = getimagesize(Storage::disk('public')->path(setting('store.logo')));
+        $this->assertSame([108, 58], [$width, $height]); // 100×50 artwork + 4px padding each side
+
+        $logoUrl = Storage::disk('public')->url(setting('store.logo'));
+        $this->get('/')->assertSee($logoUrl);
+        $this->get(route('admin.dashboard'))->assertSee($logoUrl);
+        $this->post(route('admin.logout'));
+        $this->get(route('admin.login'))->assertSee($logoUrl);
+    }
+
     public function test_admin_users_and_roles(): void
     {
         $this->actingAs($me = $this->admin());

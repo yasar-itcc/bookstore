@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Models\Category;
 use App\Models\Setting;
+use App\Support\ImageTrimmer;
 use App\Support\SettingsSchema;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -119,7 +120,12 @@ class SettingController extends Controller
                 Storage::disk('public')->delete($current);
             }
 
-            return $request->file($input)?->store('settings', 'public');
+            $path = $request->file($input)?->store('settings', 'public');
+            if ($path && str_starts_with($key, 'store.logo')) {
+                ImageTrimmer::trimTransparent($path);
+            }
+
+            return $path;
         }
 
         return $current;

@@ -3,6 +3,8 @@
 @php
     // Sidebar menu. Each section has a heading (like Vuexy's "Apps & Pages") and its links.
     $user = auth()->user();
+    $storeName = setting('store.name');
+    $logo = \App\Models\Setting::imageUrl('store.logo');
     $unreadMessages = $user->canAccessSection('messages') ? \App\Models\ContactMessage::whereNull('read_at')->count() : 0;
     $menu = [
         null => [
@@ -43,7 +45,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title }} · Book Store Admin</title>
+    <title>{{ $title }} · {{ $storeName }} Admin</title>
     @fonts('public-sans')
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 </head>
@@ -61,12 +63,17 @@
            ]"
            class="fixed inset-y-0 left-0 z-40 flex w-[260px] flex-col bg-white shadow-nav transition-all duration-300">
 
-        <div class="flex h-16 shrink-0 items-center justify-between px-5">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 overflow-hidden">
-                <span class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+        <div class="flex h-20 shrink-0 items-center justify-between px-5">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 overflow-hidden" aria-label="{{ $storeName }} admin home">
+                {{-- Your logo when the menu is open; a small book icon when it's collapsed to icons. --}}
+                <span @if ($logo) x-show="compact" x-cloak @endif class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
                     <i class="ti ti-book text-xl"></i>
                 </span>
-                <span x-show="!compact" class="text-xl font-bold whitespace-nowrap text-navy">Book Store</span>
+                @if ($logo)
+                    <img x-show="!compact" src="{{ $logo }}" alt="{{ $storeName }}" class="h-12 w-auto max-w-44 object-contain">
+                @else
+                    <span x-show="!compact" class="text-xl font-bold whitespace-nowrap text-navy">{{ $storeName }}</span>
+                @endif
             </a>
             <button type="button" @click="toggleCollapsed()" x-show="!compact"
                     class="hidden size-7 items-center justify-center rounded-full text-muted hover:bg-page hover:text-ink lg:flex"
@@ -167,7 +174,7 @@
         </main>
 
         <footer class="mx-auto flex w-full max-w-[1440px] flex-wrap items-center justify-between gap-2 px-4 pb-5 text-sm text-muted sm:px-6">
-            <span>© {{ date('Y') }} Book Store</span>
+            <span>© {{ date('Y') }} {{ $storeName }}</span>
             <span>Admin panel</span>
         </footer>
     </div>

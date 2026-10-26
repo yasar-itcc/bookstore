@@ -10,6 +10,7 @@ return [
         'name' => 'Book Store',
         'tagline' => 'Your favourite books, all in one place',
         'logo' => null,
+        'logo_light' => null,
         'favicon' => null,
         'email' => 'hello@example.com',
         'phone' => '+91 98765 43210',

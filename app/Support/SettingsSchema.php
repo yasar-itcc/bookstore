@@ -38,7 +38,8 @@ class SettingsSchema
                     'Store' => [
                         'store.name' => ['Store name', 'text', 'required'],
                         'store.tagline' => ['Tagline', 'text'],
-                        'store.logo' => ['Logo', 'image', null, 'PNG or SVG with a transparent background works best. Shown in the header.'],
+                        'store.logo' => ['Logo', 'image', null, 'PNG with a transparent background works best. Shown in the header and admin. Empty borders are trimmed automatically.'],
+                        'store.logo_light' => ['Logo for dark backgrounds', 'image', null, 'Optional white version for the dark footer. Without it, your main logo is shown on a white badge.'],
                         'store.favicon' => ['Browser tab icon', 'image', null, 'A small square image (e.g. 64×64).'],
                         'store.footer_about' => ['Footer text', 'textarea', null, 'A short line about your store, shown in the footer.'],
                     ],

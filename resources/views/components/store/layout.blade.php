@@ -6,6 +6,7 @@
     $metaDescription = $description ?: setting('seo.meta_description');
     $shareImage = $image ?: \App\Models\Setting::imageUrl('seo.og_image');
     $logo = \App\Models\Setting::imageUrl('store.logo');
+    $logoLight = \App\Models\Setting::imageUrl('store.logo_light');
     $favicon = \App\Models\Setting::imageUrl('store.favicon');
 
     $nav = [
@@ -66,10 +67,10 @@
 
     {{-- Header --}}
     <header class="sticky top-0 z-40 border-b border-line/60 bg-white/95 backdrop-blur">
-        <div class="store-container flex h-20 items-center gap-6">
+        <div class="store-container flex h-20 items-center gap-6 md:h-24">
             <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2.5" aria-label="{{ $storeName }} home">
                 @if ($logo)
-                    <img src="{{ $logo }}" alt="{{ $storeName }}" class="h-10 w-auto">
+                    <img src="{{ $logo }}" alt="{{ $storeName }}" class="h-12 w-auto max-w-44 object-contain md:h-16 md:max-w-56">
                 @else
                     <span class="flex size-10 items-center justify-center rounded-lg bg-primary text-white"><i class="ti ti-book text-2xl"></i></span>
                     <span class="text-2xl font-bold tracking-tight text-navy">{{ $storeName }}</span>
@@ -126,9 +127,18 @@
     <footer class="mt-20 bg-navy text-white/80">
         <div class="store-container grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
             <div>
-                <a href="{{ route('home') }}" class="mb-4 flex items-center gap-2.5">
-                    <span class="flex size-10 items-center justify-center rounded-lg bg-white/10 text-cyan"><i class="ti ti-book text-2xl"></i></span>
-                    <span class="text-2xl font-bold text-white">{{ $storeName }}</span>
+                <a href="{{ route('home') }}" class="mb-5 inline-flex items-center gap-2.5" aria-label="{{ $storeName }} home">
+                    @if ($logoLight)
+                        <img src="{{ $logoLight }}" alt="{{ $storeName }}" class="h-16 w-auto max-w-56 object-contain">
+                    @elseif ($logo)
+                        {{-- The main logo is made for light backgrounds, so it sits on a white badge here. --}}
+                        <span class="inline-flex rounded-xl bg-white px-4 py-3 shadow-sm">
+                            <img src="{{ $logo }}" alt="{{ $storeName }}" class="h-14 w-auto max-w-52 object-contain">
+                        </span>
+                    @else
+                        <span class="flex size-10 items-center justify-center rounded-lg bg-white/10 text-cyan"><i class="ti ti-book text-2xl"></i></span>
+                        <span class="text-2xl font-bold text-white">{{ $storeName }}</span>
+                    @endif
                 </a>
                 <p class="mb-5 text-sm leading-relaxed">{{ setting('store.footer_about') }}</p>
                 @if ($socials)
