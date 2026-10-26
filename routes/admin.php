@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\NewsletterSubscriberController;
+use App\Http\Controllers\Admin\PageContentController;
 use App\Http\Controllers\Admin\PageController;
 use App\Http\Controllers\Admin\PostController;
 use App\Http\Controllers\Admin\PricingPlanController;
@@ -54,6 +55,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     });
 
     Route::middleware('section:content')->group(function () {
+        Route::get('page-content/{group?}', [PageContentController::class, 'edit'])->name('page-content.edit');
+        Route::put('page-content/{group}', [PageContentController::class, 'update'])->name('page-content.update');
         Route::resource('pages', PageController::class)->except('show');
         Route::resource('posts', PostController::class)->except('show');
         Route::resource('testimonials', TestimonialController::class)->except('show');

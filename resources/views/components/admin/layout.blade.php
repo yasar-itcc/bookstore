@@ -23,7 +23,7 @@
             ['label' => 'Subscribers', 'icon' => 'ti-mail', 'route' => 'admin.subscribers.index', 'active' => 'admin.subscribers.*', 'section' => 'marketing'],
         ],
         'Content' => [
-            ['label' => 'Pages', 'icon' => 'ti-file-text', 'route' => 'admin.pages.index', 'active' => 'admin.pages.*', 'section' => 'content'],
+            ['label' => 'Pages', 'icon' => 'ti-file-text', 'route' => 'admin.pages.index', 'active' => ['admin.pages.*', 'admin.page-content.*'], 'section' => 'content'],
             ['label' => 'Blog posts', 'icon' => 'ti-article', 'route' => 'admin.posts.index', 'active' => 'admin.posts.*', 'section' => 'content'],
             ['label' => 'Testimonials', 'icon' => 'ti-message-heart', 'route' => 'admin.testimonials.index', 'active' => 'admin.testimonials.*', 'section' => 'content'],
             ['label' => 'Contact messages', 'icon' => 'ti-inbox', 'route' => 'admin.messages.index', 'active' => 'admin.messages.*', 'section' => 'messages', 'badge' => $unreadMessages],

@@ -3,29 +3,36 @@
 namespace App\Support;
 
 /**
- * The fields shown under Admin → Settings, grouped into tabs and sections.
+ * Editable store values, grouped into tabs and sections.
+ * Scope "settings" groups are under Admin → Settings; scope "pages" groups (home, about, pricing text)
+ * are under Admin → Content → Pages.
  * Types: text, textarea, email, url, number, toggle, image, category, book, features, team.
  * Default values live in config/store-settings.php.
  */
 class SettingsSchema
 {
-    public static function groups(): array
+    /**
+     * @param  'settings'|'pages'|null  $scope  Only groups in this scope (all groups when null).
+     */
+    public static function groups(?string $scope = null): array
     {
         // Every field becomes [label, type, required, hint].
-        return collect(static::definitions())->map(function ($group) {
-            $group['sections'] = collect($group['sections'])
-                ->map(fn ($fields) => array_map(fn ($field) => array_pad($field, 4, null), $fields))
-                ->all();
+        return collect(static::definitions())
+            ->filter(fn ($group) => $scope === null || $group['scope'] === $scope)
+            ->map(function ($group) {
+                $group['sections'] = collect($group['sections'])
+                    ->map(fn ($fields) => array_map(fn ($field) => array_pad($field, 4, null), $fields))
+                    ->all();
 
-            return $group;
-        })->all();
+                return $group;
+            })->all();
     }
 
     private static function definitions(): array
     {
         return [
             'store' => [
-                'label' => 'Store info', 'icon' => 'ti-building-store',
+                'scope' => 'settings', 'label' => 'Store info', 'icon' => 'ti-building-store',
                 'description' => 'Your store name, logo, contact details, GST and delivery charges.',
                 'sections' => [
                     'Store' => [
@@ -61,7 +68,7 @@ class SettingsSchema
             ],
 
             'email' => [
-                'label' => 'Email', 'icon' => 'ti-mail',
+                'scope' => 'settings', 'label' => 'Email', 'icon' => 'ti-mail',
                 'description' => 'Who emails come from, and which emails are sent. Order emails start with checkout (phase 3).',
                 'sections' => [
                     'Sender' => [
@@ -79,7 +86,7 @@ class SettingsSchema
             ],
 
             'seo' => [
-                'label' => 'SEO', 'icon' => 'ti-world-search',
+                'scope' => 'settings', 'label' => 'SEO', 'icon' => 'ti-world-search',
                 'description' => 'How your store appears in Google and when links are shared on WhatsApp or social media.',
                 'sections' => [
                     'Search engines' => [
@@ -96,8 +103,8 @@ class SettingsSchema
             ],
 
             'home' => [
-                'label' => 'Home page', 'icon' => 'ti-home',
-                'description' => 'Turn home page sections on or off and change their text. Slides are managed under Marketing → Banners & slider.',
+                'scope' => 'pages', 'label' => 'Home page', 'icon' => 'ti-home', 'url' => '/',
+                'description' => 'Turn home page sections on or off and change their text.',
                 'sections' => [
                     'Announcement bar' => [
                         'home.announcement_enabled' => ['Show announcement bar', 'toggle'],
@@ -149,7 +156,7 @@ class SettingsSchema
             ],
 
             'about' => [
-                'label' => 'About page', 'icon' => 'ti-info-circle',
+                'scope' => 'pages', 'label' => 'About page', 'icon' => 'ti-info-circle', 'url' => '/about',
                 'description' => 'Text, images and team members on your About page.',
                 'sections' => [
                     'Our story' => [
@@ -174,11 +181,18 @@ class SettingsSchema
                         'about.team_title' => ['Heading', 'text'],
                         'about.team' => ['Team members', 'team'],
                     ],
-                    'Pricing page' => [
+                ],
+            ],
+
+            'pricing' => [
+                'scope' => 'pages', 'label' => 'Pricing page', 'icon' => 'ti-crown', 'url' => '/pricing',
+                'description' => 'Heading and text on your Pricing page. The plans themselves are under Marketing → Pricing plans.',
+                'sections' => [
+                    'Page text' => [
                         'pricing.eyebrow' => ['Small label', 'text'],
                         'pricing.title' => ['Heading', 'text'],
                         'pricing.text' => ['Text', 'textarea'],
-                        'pricing.note' => ['Note under the plans', 'text', null, 'Plans themselves are under Marketing → Pricing plans.'],
+                        'pricing.note' => ['Note under the plans', 'text'],
                     ],
                 ],
             ],

@@ -20,7 +20,7 @@ class HomeController extends Controller
 
         $featured = $books()->where('is_featured', true)->latest()->take(8)->get();
 
-        // The two category shelves: chosen in Settings → Home page, otherwise the two largest categories.
+        // The two category shelves: chosen in Content → Pages → Home page, otherwise the two largest categories.
         $columnCategories = collect([setting('home.column_category_1'), setting('home.column_category_2')])
             ->filter()
             ->map(fn ($id) => Category::find($id))

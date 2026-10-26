@@ -40,9 +40,31 @@ class MarketingContentTest extends TestCase
             $this->get(route("admin.{$route}"))->assertOk();
         }
 
-        foreach (['store', 'email', 'seo', 'home', 'about'] as $group) {
+        foreach (['store', 'email', 'seo'] as $group) {
             $this->get(route('admin.settings.edit', $group))->assertOk();
         }
+
+        foreach (['home', 'about', 'pricing'] as $group) {
+            $this->get(route('admin.page-content.edit', $group))->assertOk();
+        }
+        $this->get(route('admin.pages.index'))->assertSee('Home page')->assertSee('About page')->assertSee('Pricing page');
+    }
+
+    public function test_home_about_and_pricing_text_live_under_pages_not_settings(): void
+    {
+        $this->actingAs($this->admin('manager'));
+
+        $this->get(route('admin.page-content.edit', 'home'))->assertOk()->assertSee('Announcement bar');
+        $this->put(route('admin.page-content.update', 'home'), ['home__bestsellers_title' => 'Top picks this week', 'home__show_blog' => 0])
+            ->assertRedirect(route('admin.page-content.edit', 'home'));
+        $this->assertSame('Top picks this week', setting('home.bestsellers_title'));
+        $this->assertSame('0', setting('home.show_blog'));
+
+        // Each screen only edits its own groups.
+        $this->actingAs($this->admin());
+        $this->get(route('admin.settings.edit', 'home'))->assertNotFound();
+        $this->put(route('admin.page-content.update', 'store'), ['store__name' => 'Hacked'])->assertNotFound();
+        $this->get(route('admin.settings.edit'))->assertOk()->assertDontSee('Announcement bar');
     }
 
     public function test_roles_limit_what_each_user_can_open(): void
@@ -144,7 +166,7 @@ class MarketingContentTest extends TestCase
         $this->assertSame('0', setting('store.cod_enabled'));
         Storage::disk('public')->assertExists(setting('store.logo'));
 
-        $this->put(route('admin.settings.update', 'about'), [
+        $this->put(route('admin.page-content.update', 'about'), [
             'about__features' => [['icon' => 'ti-gift', 'title' => 'Gift wrap', 'text' => 'Free'], ['icon' => '', 'title' => '', 'text' => '']],
             'about__team' => [['name' => 'Asha', 'role' => 'Founder', 'photo' => null]],
         ])->assertRedirect();
@@ -152,7 +174,7 @@ class MarketingContentTest extends TestCase
         $this->assertSame('Asha', Setting::json('about.team')[0]['name']);
 
         $this->put(route('admin.settings.update', 'store'), ['store__name' => ''])->assertSessionHasErrors('store__name');
-        $this->put(route('admin.settings.update', 'about'), ['about__features' => [['icon' => '<script>', 'title' => 'x']]])->assertSessionHasErrors('about__features.0.icon');
+        $this->put(route('admin.page-content.update', 'about'), ['about__features' => [['icon' => '<script>', 'title' => 'x']]])->assertSessionHasErrors('about__features.0.icon');
     }
 
     public function test_admin_users_and_roles(): void

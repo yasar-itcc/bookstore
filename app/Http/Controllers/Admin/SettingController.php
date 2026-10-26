@@ -12,16 +12,30 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
+/**
+ * Store info, Email and SEO under Admin → Settings. PageContentController reuses this for the
+ * Home, About and Pricing page text under Content → Pages.
+ */
 class SettingController extends Controller
 {
-    public function edit(string $group = 'store'): View
+    /**
+     * Which SettingsSchema groups this screen edits, and the route names of the editor.
+     */
+    protected string $scope = 'settings';
+
+    protected string $route = 'admin.settings';
+
+    public function edit(?string $group = null): View
     {
-        $groups = SettingsSchema::groups();
+        $groups = SettingsSchema::groups($this->scope);
+        $group ??= array_key_first($groups);
         abort_unless(isset($groups[$group]), 404);
 
         return view('admin.settings.edit', [
             'groups' => $groups,
             'group' => $group,
+            'scope' => $this->scope,
+            'route' => $this->route,
             'categories' => Category::orderBy('name')->pluck('name', 'id')->all(),
             'books' => Book::orderBy('title')->pluck('title', 'id')->all(),
         ]);
@@ -29,8 +43,8 @@ class SettingController extends Controller
 
     public function update(Request $request, string $group): RedirectResponse
     {
+        abort_unless(isset(SettingsSchema::groups($this->scope)[$group]), 404);
         $fields = SettingsSchema::fields($group);
-        abort_unless($fields, 404);
 
         $request->validate($this->rules($fields));
 
@@ -52,7 +66,9 @@ class SettingController extends Controller
 
         Setting::put($values);
 
-        return redirect()->route('admin.settings.edit', $group)->with('status', SettingsSchema::groups()[$group]['label'].' settings saved.');
+        $label = SettingsSchema::groups()[$group]['label'];
+
+        return redirect()->route("{$this->route}.edit", $group)->with('status', $this->scope === 'pages' ? "{$label} saved." : "{$label} settings saved.");
     }
 
     private function rules(array $fields): array

@@ -1,5 +1,5 @@
 <x-admin.layout title="Pricing plans">
-    <x-admin.page-header title="Pricing plans" subtitle="Membership plans shown on the Pricing page. Page text is under Settings → About page."
+    <x-admin.page-header title="Pricing plans" subtitle="Membership plans shown on the Pricing page. Page text is under Content → Pages → Pricing page."
                          :breadcrumbs="['Dashboard' => route('admin.dashboard'), 'Marketing' => null]">
         <x-slot:actions>
             <a href="{{ url('/pricing') }}" target="_blank" class="btn btn-secondary"><i class="ti ti-external-link"></i> View page</a>

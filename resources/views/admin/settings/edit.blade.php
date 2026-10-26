@@ -1,17 +1,35 @@
 @use('App\Models\Setting')
 
-@php $current = $groups[$group]; @endphp
+{{-- Used for Settings (store, email, SEO) and for Content → Pages (home, about, pricing text). --}}
+@php
+    $current = $groups[$group];
+    $isPages = $scope === 'pages';
+@endphp
 
-<x-admin.layout :title="$current['label'].' settings'">
-    <x-admin.page-header title="Settings" :subtitle="$current['description']"
-                         :breadcrumbs="['Dashboard' => route('admin.dashboard'), 'Settings' => null, $current['label'] => null]" />
+<x-admin.layout :title="$isPages ? $current['label'] : $current['label'].' settings'">
+    <x-admin.page-header :title="$isPages ? $current['label'] : 'Settings'" :subtitle="$current['description']"
+                         :breadcrumbs="$isPages
+                            ? ['Dashboard' => route('admin.dashboard'), 'Pages' => route('admin.pages.index'), $current['label'] => null]
+                            : ['Dashboard' => route('admin.dashboard'), 'Settings' => null, $current['label'] => null]">
+        @if ($isPages)
+            <x-slot:actions>
+                @if ($group === 'home')
+                    <a href="{{ route('admin.banners.index') }}" class="btn btn-secondary"><i class="ti ti-photo"></i> Edit slider</a>
+                @endif
+                @if ($group === 'pricing')
+                    <a href="{{ route('admin.pricing-plans.index') }}" class="btn btn-secondary"><i class="ti ti-crown"></i> Edit plans</a>
+                @endif
+                <a href="{{ url($current['url']) }}" target="_blank" class="btn btn-secondary"><i class="ti ti-external-link"></i> View page</a>
+            </x-slot:actions>
+        @endif
+    </x-admin.page-header>
 
     <div class="grid grid-cols-12 gap-6">
         {{-- Tabs --}}
         <nav class="col-span-12 lg:col-span-3">
             <div class="admin-card flex gap-1 overflow-x-auto p-2 lg:flex-col">
                 @foreach ($groups as $key => $info)
-                    <a href="{{ route('admin.settings.edit', $key) }}" @class([
+                    <a href="{{ route("{$route}.edit", $key) }}" @class([
                         'flex shrink-0 items-center gap-3 rounded-md px-3 py-2.5 text-sm transition',
                         'bg-primary text-white shadow-md shadow-primary/30' => $key === $group,
                         'text-ink hover:bg-page' => $key !== $group,
@@ -19,10 +37,15 @@
                         <i class="ti {{ $info['icon'] }} text-xl"></i> {{ $info['label'] }}
                     </a>
                 @endforeach
+                @if ($isPages)
+                    <a href="{{ route('admin.pages.index') }}" class="flex shrink-0 items-center gap-3 rounded-md px-3 py-2.5 text-sm text-muted hover:bg-page hover:text-ink lg:mt-2 lg:border-t lg:border-line lg:pt-3">
+                        <i class="ti ti-arrow-left text-xl"></i> All pages
+                    </a>
+                @endif
             </div>
         </nav>
 
-        <form method="POST" enctype="multipart/form-data" action="{{ route('admin.settings.update', $group) }}" class="col-span-12 space-y-6 lg:col-span-9">
+        <form method="POST" enctype="multipart/form-data" action="{{ route("{$route}.update", $group) }}" class="col-span-12 space-y-6 lg:col-span-9">
             @csrf
             @method('PUT')
 
@@ -98,7 +121,7 @@
             @endforeach
 
             <div class="sticky bottom-4 z-10 flex justify-end">
-                <button type="submit" class="btn btn-primary px-6 py-2.5 shadow-lg"><i class="ti ti-device-floppy"></i> Save {{ Str::lower($current['label']) }} settings</button>
+                <button type="submit" class="btn btn-primary px-6 py-2.5 shadow-lg"><i class="ti ti-device-floppy"></i> Save {{ Str::lower($current['label']) }}{{ $isPages ? '' : ' settings' }}</button>
             </div>
         </form>
     </div>
