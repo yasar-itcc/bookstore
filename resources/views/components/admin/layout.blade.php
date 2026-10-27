@@ -46,6 +46,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }} · {{ $storeName }} Admin</title>
+    @if ($favicon = \App\Models\Setting::imageUrl('store.favicon'))<link rel="icon" type="image/png" href="{{ $favicon }}">@endif
     @fonts('public-sans')
     @vite(['resources/css/admin.css', 'resources/js/admin.js'])
 </head>

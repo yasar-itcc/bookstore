@@ -44,7 +44,10 @@
     <meta property="og:description" content="{{ $metaDescription }}">
     <meta property="og:url" content="{{ url()->current() }}">
     @if ($shareImage)<meta property="og:image" content="{{ $shareImage }}">@endif
-    @if ($favicon)<link rel="icon" href="{{ $favicon }}">@endif
+    @if ($favicon)
+        <link rel="icon" type="image/png" href="{{ $favicon }}">
+        <link rel="apple-touch-icon" href="{{ $favicon }}">
+    @endif
     @fonts(['public-sans', 'lora'])
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @if ($gaId = setting('seo.google_analytics_id'))

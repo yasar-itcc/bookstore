@@ -177,7 +177,7 @@ class MarketingContentTest extends TestCase
         $this->put(route('admin.page-content.update', 'about'), ['about__features' => [['icon' => '<script>', 'title' => 'x']]])->assertSessionHasErrors('about__features.0.icon');
     }
 
-    public function test_uploaded_logos_are_trimmed_and_shown_everywhere(): void
+    public function test_uploaded_logos_and_favicon_are_shown_everywhere(): void
     {
         Storage::fake('public');
         $this->actingAs($this->admin());
@@ -197,6 +197,11 @@ class MarketingContentTest extends TestCase
 
         [$width, $height] = getimagesize(Storage::disk('public')->path(setting('store.logo')));
         $this->assertSame([108, 58], [$width, $height]); // 100×50 artwork + 4px padding each side
+
+        Setting::put(['store.favicon' => 'settings/icon.png']);
+        $iconUrl = Storage::disk('public')->url('settings/icon.png');
+        $this->get('/')->assertSee('<link rel="icon" type="image/png" href="'.$iconUrl.'">', false);
+        $this->get(route('admin.dashboard'))->assertSee('<link rel="icon" type="image/png" href="'.$iconUrl.'">', false);
 
         $logoUrl = Storage::disk('public')->url(setting('store.logo'));
         $this->get('/')->assertSee($logoUrl);
