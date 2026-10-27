@@ -66,6 +66,27 @@ class CoverGenerator
     }
 
     /**
+     * Square avatar (600×600) with an author's initials, for authors without a photo.
+     */
+    public function authorSvg(string $name): string
+    {
+        [$background, $accent] = self::PALETTES[abs(crc32($name)) % count(self::PALETTES)];
+
+        $words = preg_split('/[\s.]+/u', trim($name), -1, PREG_SPLIT_NO_EMPTY);
+        $initials = mb_strtoupper(mb_substr($words[0] ?? '?', 0, 1).(count($words) > 1 ? mb_substr(end($words), 0, 1) : ''));
+        $initials = $this->e($initials);
+
+        return <<<SVG
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+          <rect width="600" height="600" fill="{$background}"/>
+          <circle cx="520" cy="80" r="190" fill="{$accent}" fill-opacity="0.18"/>
+          <circle cx="60" cy="560" r="160" fill="{$accent}" fill-opacity="0.14"/>
+          <text x="300" y="300" dy="0.35em" text-anchor="middle" font-family="Lora, Georgia, serif" font-size="230" fill="#FFFFFF">{$initials}</text>
+        </svg>
+        SVG;
+    }
+
+    /**
      * Wide cover (1200×750) for a blog post: category, title and the store name on a brand colour.
      */
     public function postSvg(string $title, ?string $category): string

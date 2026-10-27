@@ -12,6 +12,7 @@
     $nav = [
         ['Home', route('home'), 'home'],
         ['Books', route('books.index'), 'books.*'],
+        ['Authors', route('authors.index'), 'authors.*'],
         ['About', route('about'), 'about'],
         ['Pricing', route('pricing'), 'pricing'],
         ['Blog', route('blog.index'), 'blog.*'],

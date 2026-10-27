@@ -33,6 +33,7 @@ class DemoContentSeeder extends Seeder
         $this->plans();
         $this->pages();
         $this->posts($covers);
+        $this->call(AuthorBioSeeder::class);
     }
 
     private function banners(): void

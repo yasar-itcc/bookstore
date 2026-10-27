@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\Storage;
 
 #[Fillable(['name', 'slug', 'bio', 'photo', 'is_active'])]
 class Author extends Model
@@ -25,5 +26,10 @@ class Author extends Model
     public function books(): BelongsToMany
     {
         return $this->belongsToMany(Book::class);
+    }
+
+    public function photoUrl(): ?string
+    {
+        return $this->photo ? Storage::disk('public')->url($this->photo) : null;
     }
 }

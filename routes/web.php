@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Store\AuthorController;
 use App\Http\Controllers\Store\BlogController;
 use App\Http\Controllers\Store\CatalogController;
 use App\Http\Controllers\Store\ContactController;
@@ -12,6 +13,9 @@ Route::get('/', HomeController::class)->name('home');
 
 Route::get('books', [CatalogController::class, 'index'])->name('books.index');
 Route::get('books/{book:slug}', [CatalogController::class, 'show'])->name('books.show');
+
+Route::get('authors', [AuthorController::class, 'index'])->name('authors.index');
+Route::get('authors/{author:slug}', [AuthorController::class, 'show'])->name('authors.show');
 
 Route::get('about', [PageController::class, 'about'])->name('about');
 Route::get('pricing', [PageController::class, 'pricing'])->name('pricing');

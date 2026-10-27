@@ -39,7 +39,13 @@
             </div>
             <h1 class="font-serif text-4xl leading-tight font-medium text-navy md:text-5xl">{{ $book->title }}</h1>
             @if ($book->subtitle)<p class="mt-2 text-xl text-muted">{{ $book->subtitle }}</p>@endif
-            <p class="mt-3 text-lg">by <span class="font-semibold text-primary">{{ $book->authors->pluck('name')->join(', ') ?: 'Unknown author' }}</span></p>
+            <p class="mt-3 text-lg">by
+                @forelse ($book->authors as $author)
+                    <a href="{{ route('authors.show', $author) }}" class="font-semibold text-primary hover:underline">{{ $author->name }}</a>{{ $loop->last ? '' : ',' }}
+                @empty
+                    <span class="font-semibold text-muted">Unknown author</span>
+                @endforelse
+            </p>
 
             @if ($formats->isNotEmpty())
                 <div class="mt-8">
@@ -87,6 +93,24 @@
                     <p class="leading-relaxed whitespace-pre-line text-ink">{{ $book->description }}</p>
                 </div>
             @endif
+
+            @foreach ($book->authors->filter(fn ($author) => $author->is_active && $author->bio) as $author)
+                <div class="mt-10 flex flex-col gap-5 rounded-2xl bg-page p-6 sm:flex-row sm:items-start">
+                    <a href="{{ route('authors.show', $author) }}" class="mx-auto size-24 shrink-0 overflow-hidden rounded-full bg-primary-soft ring-4 ring-white sm:mx-0">
+                        @if ($author->photoUrl())
+                            <img src="{{ $author->photoUrl() }}" alt="{{ $author->name }}" class="size-full object-cover">
+                        @else
+                            <span class="flex size-full items-center justify-center font-serif text-4xl text-primary">{{ Str::substr($author->name, 0, 1) }}</span>
+                        @endif
+                    </a>
+                    <div>
+                        <p class="text-xs font-semibold tracking-[0.2em] text-primary uppercase">About the author</p>
+                        <h2 class="mt-1 font-serif text-2xl text-navy">{{ $author->name }}</h2>
+                        <p class="mt-2 leading-relaxed text-ink">{{ Str::limit($author->bio, 320) }}</p>
+                        <a href="{{ route('authors.show', $author) }}" class="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary">More about {{ $author->name }} <i class="ti ti-arrow-right"></i></a>
+                    </div>
+                </div>
+            @endforeach
 
             <div class="mt-10">
                 <h2 class="mb-3 font-serif text-2xl text-navy">Details</h2>
