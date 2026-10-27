@@ -11,6 +11,7 @@ use App\Models\Page;
 use App\Models\Post;
 use App\Models\PricingPlan;
 use App\Models\Setting;
+use App\Models\User;
 use Database\Seeders\DemoContentSeeder;
 use Database\Seeders\SampleCatalogSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -103,6 +104,26 @@ class StorefrontTest extends TestCase
         $this->assertSame(1, ContactMessage::count());
 
         $this->post('/contact', ['name' => '', 'email' => 'x', 'message' => 'short'])->assertSessionHasErrors(['name', 'email', 'message']);
+    }
+
+    public function test_colour_theme_setting_and_admin_preview(): void
+    {
+        $emeraldPrimary = '--color-primary: #0F8A6F;';
+
+        // Default theme adds no overrides.
+        $this->get('/')->assertDontSee($emeraldPrimary, false);
+
+        // Guests can't preview; admins can, with a notice.
+        $this->get('/?theme=emerald')->assertDontSee($emeraldPrimary, false);
+        $admin = User::factory()->create();
+        $admin->forceFill(['is_admin' => true, 'role' => 'admin'])->save();
+        $this->actingAs($admin)->get('/?theme=emerald')->assertSee($emeraldPrimary, false)->assertSee('Previewing');
+
+        // Saving the theme applies it for everyone; unknown themes are rejected.
+        $this->put(route('admin.settings.update', 'store'), ['store__name' => 'Book Store', 'store__theme' => 'emerald'])->assertRedirect();
+        $this->put(route('admin.settings.update', 'store'), ['store__name' => 'Book Store', 'store__theme' => 'neon'])->assertSessionHasErrors('store__theme');
+        auth()->logout();
+        $this->get('/')->assertSee($emeraldPrimary, false)->assertDontSee('Previewing');
     }
 
     public function test_admin_url_is_not_swallowed_by_page_routes(): void

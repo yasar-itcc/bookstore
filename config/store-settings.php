@@ -11,6 +11,7 @@ return [
         'tagline' => 'Your favourite books, all in one place',
         'logo' => null,
         'logo_light' => null,
+        'theme' => 'ocean',
         'favicon' => null,
         'email' => 'hello@example.com',
         'phone' => '+91 98765 43210',

@@ -8,9 +8,11 @@ use App\Models\Category;
 use App\Models\Setting;
 use App\Support\ImageTrimmer;
 use App\Support\SettingsSchema;
+use App\Support\Themes;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 /**
@@ -61,6 +63,7 @@ class SettingController extends Controller
                     ->map(fn ($item) => ['icon' => $item['icon'] ?: 'ti-star', 'title' => $item['title'], 'text' => $item['text'] ?? ''])
                     ->all(),
                 'team' => $this->team($request, $input),
+                'theme' => $request->input($input) ?: Setting::get($key),
                 default => $request->input($input),
             };
         }
@@ -87,6 +90,7 @@ class SettingController extends Controller
                 'toggle' => ['nullable', 'boolean'],
                 'image' => ['nullable', 'image', 'max:2048'],
                 'category' => ['nullable', 'exists:categories,id'],
+                'theme' => ['nullable', Rule::in(array_keys(Themes::all()))],
                 'book' => ['nullable', 'exists:books,id'],
                 'features', 'team' => ['nullable', 'array', 'max:8'],
                 'textarea' => [...$base, 'string', 'max:3000'],

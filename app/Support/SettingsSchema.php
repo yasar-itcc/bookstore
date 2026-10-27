@@ -43,6 +43,9 @@ class SettingsSchema
                         'store.favicon' => ['Browser tab icon', 'image', null, 'A small square image (e.g. 64×64).'],
                         'store.footer_about' => ['Footer text', 'textarea', null, 'A short line about your store, shown in the footer.'],
                     ],
+                    'Colour theme' => [
+                        'store.theme' => ['Store colours', 'theme', null, 'Changes the colours of your store. The admin panel keeps its own colours.'],
+                    ],
                     'Contact' => [
                         'store.email' => ['Email', 'email'],
                         'store.phone' => ['Phone', 'text'],

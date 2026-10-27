@@ -63,7 +63,7 @@
                             @php
                                 $input = str_replace('.', '__', $key);
                                 $value = Setting::get($key);
-                                $wide = in_array($type, ['textarea', 'features', 'team', 'image']);
+                                $wide = in_array($type, ['textarea', 'features', 'team', 'image', 'theme']);
                             @endphp
                             <div @class(['md:col-span-2' => $wide])>
                                 @switch($type)
@@ -90,6 +90,28 @@
                                                 @if ($url)
                                                     <label class="flex items-center gap-1.5 text-sm text-muted"><input type="checkbox" name="{{ $input }}_remove" value="1" class="accent-primary"> Remove</label>
                                                 @endif
+                                            </div>
+                                        </x-admin.field>
+                                        @break
+
+                                    @case('theme')
+                                        <x-admin.field :label="$label" :name="$input" :hint="$hint">
+                                            <div class="grid gap-3 sm:grid-cols-2">
+                                                @foreach (\App\Support\Themes::all() as $themeKey => $theme)
+                                                    <label class="flex cursor-pointer flex-col gap-3 rounded-lg border-2 border-line p-4 transition has-checked:border-primary has-checked:bg-primary-soft/40">
+                                                        <span class="flex items-center gap-2">
+                                                            <input type="radio" name="{{ $input }}" value="{{ $themeKey }}" class="accent-primary" @checked(old($input, $value ?: \App\Support\Themes::DEFAULT) === $themeKey)>
+                                                            <span class="font-semibold text-navy">{{ $theme['label'] }}</span>
+                                                            <a href="{{ url('/?theme='.$themeKey) }}" target="_blank" class="ml-auto text-xs text-primary hover:underline" @click.stop>Preview <i class="ti ti-external-link"></i></a>
+                                                        </span>
+                                                        <span class="flex overflow-hidden rounded-md">
+                                                            @foreach (['navy', 'primary', 'cyan', 'leaf', 'primary-soft', 'page'] as $swatch)
+                                                                <span class="h-8 flex-1" style="background: {{ $theme['colors'][$swatch] }}"></span>
+                                                            @endforeach
+                                                        </span>
+                                                        <span class="text-xs text-muted">{{ $theme['description'] }}</span>
+                                                    </label>
+                                                @endforeach
                                             </div>
                                         </x-admin.field>
                                         @break

@@ -7,6 +7,14 @@
     $shareImage = $image ?: \App\Models\Setting::imageUrl('seo.og_image');
     $logo = \App\Models\Setting::imageUrl('store.logo');
     $logoLight = \App\Models\Setting::imageUrl('store.logo_light');
+
+    // Colour theme from Settings → Store info. Signed-in admins can preview another with ?theme=…
+    $theme = setting('store.theme');
+    $previewTheme = request()->query('theme');
+    $previewing = auth()->user()?->is_admin && \App\Support\Themes::exists($previewTheme) && $previewTheme !== $theme;
+    if ($previewing) {
+        $theme = $previewTheme;
+    }
     $favicon = \App\Models\Setting::imageUrl('store.favicon');
 
     $nav = [
@@ -50,12 +58,19 @@
     @endif
     @fonts(['public-sans', 'lora'])
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @if ($themeCss = \App\Support\Themes::css($theme))<style>{!! $themeCss !!}</style>@endif
     @if ($gaId = setting('seo.google_analytics_id'))
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ urlencode($gaId) }}"></script>
         <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', @js($gaId));</script>
     @endif
 </head>
 <body class="bg-white font-sans text-ink antialiased" x-data="{ menuOpen: false, searchOpen: false }">
+
+    @if ($previewing)
+        <div class="fixed bottom-5 left-5 z-50 rounded-full bg-navy px-4 py-2 text-sm text-white shadow-lg">
+            <i class="ti ti-palette mr-1"></i> Previewing “{{ \App\Support\Themes::all()[$theme]['label'] }}”. Only admins see this.
+        </div>
+    @endif
 
     {{-- Announcement bar --}}
     @if (setting('home.announcement_enabled') && setting('home.announcement_text'))
