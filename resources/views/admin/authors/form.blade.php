@@ -33,4 +33,69 @@
             </div>
         </div>
     </form>
+
+    {{-- Books by this author --}}
+    @if ($editing)
+        <div class="admin-card mt-6 overflow-hidden">
+            <div class="flex flex-wrap items-center justify-between gap-3 p-6 pb-4">
+                <div>
+                    <h2 class="text-lg font-semibold text-navy">Books by {{ $author->name }}</h2>
+                    <p class="text-sm text-muted">{{ $books->count() }} {{ Str::plural('book', $books->count()) }}. To add or remove a book, edit the book and change its authors.</p>
+                </div>
+                <div class="flex gap-2">
+                    @if ($author->is_active && $books->contains('is_active', true))
+                        <a href="{{ route('authors.show', $author) }}" target="_blank" class="btn btn-secondary"><i class="ti ti-external-link"></i> View on store</a>
+                    @endif
+                    <a href="{{ route('admin.books.create') }}" class="btn btn-secondary"><i class="ti ti-plus"></i> Add book</a>
+                </div>
+            </div>
+
+            @if ($books->isEmpty())
+                <x-admin.empty-state icon="ti-books" title="No books yet" text="Books appear here once you pick this author on a book's edit page." />
+            @else
+                <div class="overflow-x-auto">
+                    <table class="admin-table">
+                        <thead><tr><th>Book</th><th>Category</th><th>Formats and prices</th><th>Stock</th><th>Status</th><th class="text-right">Edit</th></tr></thead>
+                        <tbody>
+                        @foreach ($books as $book)
+                            @php $physical = $book->formats->filter(fn ($f) => ! $f->format->isDigital()); @endphp
+                            <tr>
+                                <td class="min-w-64">
+                                    <a href="{{ route('admin.books.edit', $book) }}" class="flex items-center gap-3">
+                                        @include('admin.books.partials.cover', ['book' => $book, 'size' => 'h-12 w-9'])
+                                        <span>
+                                            <span class="block font-medium text-navy hover:text-primary">{{ $book->title }}</span>
+                                            @if ($book->published_year)<span class="text-xs text-muted">{{ $book->published_year }}</span>@endif
+                                        </span>
+                                    </a>
+                                </td>
+                                <td class="text-muted">{{ $book->category?->name }}</td>
+                                <td>
+                                    <div class="flex flex-col gap-1">
+                                        @forelse ($book->formats->sortBy(fn ($f) => $f->format->value) as $format)
+                                            <span class="flex items-center gap-1.5 text-xs">
+                                                <i class="ti {{ $format->format->icon() }} text-muted"></i>
+                                                <span class="w-16 text-muted">{{ $format->format->label() }}</span>
+                                                <span class="font-medium text-navy">{{ money($format->price) }}</span>
+                                            </span>
+                                        @empty
+                                            <span class="text-xs text-amber-700">No formats</span>
+                                        @endforelse
+                                    </div>
+                                </td>
+                                <td>{{ $physical->isEmpty() ? 'Digital only' : $physical->sum('stock') }}</td>
+                                <td><x-admin.status-badge :active="$book->is_active" on="Live" off="Hidden" /></td>
+                                <td>
+                                    <div class="flex justify-end">
+                                        <a href="{{ route('admin.books.edit', $book) }}" class="flex size-8 items-center justify-center rounded-full text-muted hover:bg-page hover:text-primary" title="Edit book"><i class="ti ti-pencil text-lg"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
+        </div>
+    @endif
 </x-admin.layout>

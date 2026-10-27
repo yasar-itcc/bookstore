@@ -37,7 +37,9 @@ class AuthorController extends Controller
 
     public function edit(Author $author): View
     {
-        return view('admin.authors.form', compact('author'));
+        $books = $author->books()->with(['category', 'formats'])->orderBy('title')->get();
+
+        return view('admin.authors.form', compact('author', 'books'));
     }
 
     public function update(Request $request, Author $author): RedirectResponse

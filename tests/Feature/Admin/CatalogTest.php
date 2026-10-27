@@ -66,6 +66,24 @@ class CatalogTest extends TestCase
         $this->post(route('admin.languages.store'), ['name' => 'English 2', 'code' => 'en'])->assertSessionHasErrors('code');
     }
 
+    public function test_author_edit_page_lists_their_books(): void
+    {
+        $author = Author::factory()->create(['name' => 'Ruskin Bond']);
+        $book = Book::factory()->create(['title' => 'The Blue Umbrella']);
+        BookFormat::factory()->for($book)->create(['price' => 149]);
+        $book->authors()->attach($author);
+        Book::factory()->create(['title' => 'Someone Else\'s Book']);
+
+        $this->get(route('admin.authors.edit', $author))->assertOk()
+            ->assertSee('Books by Ruskin Bond')
+            ->assertSee('The Blue Umbrella')
+            ->assertSee(route('admin.books.edit', $book))
+            ->assertSee('₹149')
+            ->assertDontSee('Someone Else');
+
+        $this->get(route('admin.authors.create'))->assertOk()->assertDontSee('Books by');
+    }
+
     public function test_a_book_is_created_with_authors_cover_and_formats(): void
     {
         Storage::fake('public');
